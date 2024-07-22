@@ -45,7 +45,7 @@ if (typeof $request !== 'undefined') {
         $.msgBody = "签到失败，Cookie失效（已清除） ⚠️";
         $.setdata("", "CookieBM");
       } else {
-        $.msgBody = `签到失败 ‼️\n${data}`;
+        $.msgBody = `签到失败 ‼️\n${req}`;
       }
       if (barkKey) {
         await BarkNotify($, barkKey, $.name, $.msgBody);
