@@ -1,16 +1,9 @@
 /*
-吾爱破解签到脚本
-
-const CookieWA = '';
-
-//Bark APP 通知推送Key
-const barkKey = '';
 ************************
 QuantumultX 远程脚本配置:
 ************************
 
 [task_local]
-# 吾爱签到
 0 9 * * * https://raw.githubusercontent.com/gagalogoo/autoQx/main/choubao.js
 
 [rewrite_local]
@@ -20,6 +13,8 @@ https:\/\/cbxcx\.weinian\.com\.cn\/wnuser\/v1\/memberUser\/getMemberUser url scr
 [mitm] 
 hostname= cbxcx.weinian.com.cn
 */
+const CookieWA = '';
+const barkKey = '';
 
 const $ = API('choubao');
 const date = new Date();
