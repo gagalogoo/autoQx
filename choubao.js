@@ -34,7 +34,8 @@ if (typeof $request !== 'undefined') {
     };
     $.post(resquester, async function (error, response, data) {
         const req = JSON.stringify($request);
-        $.msgBody = `你好啊验证验证 \n ${req}`;
+        $.msgBody = `你好啊验证验证`;
+        $.log($.name, `你好log`);
       if (error && !data) {
         $.msgBody = `请求失败!\n${error}`;
       } else if (data.includes(`"code":0`)) {
