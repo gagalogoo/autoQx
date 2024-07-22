@@ -11,59 +11,35 @@ QuantumultX 远程脚本配置:
 
 [task_local]
 # 吾爱签到
-0 9 * * * https://raw.githubusercontent.com/NobyDa/Script/master/52pojie-DailyBonus/52pojie.js
+0 9 * * * https://raw.githubusercontent.com/gagalogoo/autoQx/main/choubao.js
 
 [rewrite_local]
 # 获取Cookie
-https:\/\/www\.52pojie\.cn\/home\.php\? url script-request-header https://raw.githubusercontent.com/NobyDa/Script/master/52pojie-DailyBonus/52pojie.js
+https:\/\/cbxcx\.weinian\.com\.cn\/wnuser\/v1\/memberUser\/getMemberUser url script-request-header https://raw.githubusercontent.com/gagalogoo/autoQx/main/choubao.js
 
 [mitm] 
-hostname= www.52pojie.cn
-
-************************
-Loon 2.1.0+ 脚本配置:
-************************
-
-[Script]
-# 吾爱签到
-cron "0 9 * * *" script-path=https://raw.githubusercontent.com/NobyDa/Script/master/52pojie-DailyBonus/52pojie.js
-
-# 获取Cookie
-http-request https:\/\/www\.52pojie\.cn\/home\.php\? script-path=https://raw.githubusercontent.com/NobyDa/Script/master/52pojie-DailyBonus/52pojie.js
-
-[Mitm] 
-hostname= www.52pojie.cn
+hostname= cbxcx.weinian.com.cn
 */
 
-const $ = API('nobyda_52pojie');
+const $ = API('choubao');
 const date = new Date();
 const reqData = {
-  url: 'https://www.52pojie.cn/home.php?mod=task&do=apply&id=2',
+  url: 'https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/daySign',
   headers: {
-    Cookie: CookieWA || $.read("COOKIE"),
+    Authorization: CookieWA || $.read("COOKIE"),
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0",
   }
 };
 if ($.env.isRequest) {
   GetCookie()
 } else if (!reqData.headers.Cookie) {
-  $.notify('吾爱破解', ``, `未填写/未获取Cookie!`);
+  $.notify('臭宝乐园', ``, `未填写/未获取Cookie!`);
 } else if (!reqData.headers.Cookie.includes('_auth=')) {
-  $.notify('吾爱破解', ``, `Cookie关键授权字段缺失, 需重新获取!`);
+  $.notify('臭宝乐园', ``, `Cookie关键授权字段缺失, 需重新获取!`);
 } else {
   $.http.put(reqData)
     .then((resp) => {
-      if (resp.body.match(/(ÒÑÍê³É|\u606d\u559c\u60a8|��̳΢�š��ᰮ�ƽ�)/)) {
-        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 签到成功 🎉"
-      } else if (resp.body.match(/(ÄúÒÑ|\u4e0b\u671f\u518d\u6765|>��Ǹ������)/)) {
-        $.msgBody = date.getMonth() + 1 + "月" + date.getDate() + "日, 已签过 ⚠️"
-      } else if (resp.body.match(/(ÏÈµÇÂ¼|\u9700\u8981\u5148\u767b\u5f55|�Ҫ�ȵ�¼���ܼ�)/)) {
-        $.msgBody = "签到失败, Cookie失效 ‼️‼️"
-      } else if (resp.statusCode == 403) {
-        $.msgBody = "服务器暂停签到 ⚠️"
-      } else {
-        $.msgBody = "脚本待更新 ‼️‼️"
-      }
+      $.msgBody = resp.msg;
     })
     .catch((err) => ($.msgBody = `签到失败 ‼️‼️\n${err || err.message}`))
     .finally(async () => {
@@ -76,18 +52,12 @@ if ($.env.isRequest) {
 }
 
 function GetCookie() {
-  const TM = $.read("TIME");
-  const CK = $request.headers['Cookie'] || $request.headers['cookie'];
-  if (CK && CK.includes('_auth=')) {
+  const CK = $request.headers['Authorization'];
+  if (CK) {
     $.write(CK, "COOKIE");
-    if (!TM || TM && (Date.now() - TM) / 1000 >= 21600) {
-      $.notify("吾爱破解", "", `写入Cookie成功 🎉`);
-      $.write(JSON.stringify(Date.now()), "TIME");
-    } else {
-      $.info(`吾爱破解\n写入Cookie成功 🎉`)
-    }
+    $.info(`臭宝乐园\n写入Cookie成功 🎉`)
   } else {
-    $.info(`吾爱破解\n写入Cookie失败, 关键值缺失`)
+    $.info(`臭宝乐园\n写入Cookie失败, 关键值缺失`)
   }
   $.done()
 }
