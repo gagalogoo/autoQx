@@ -14,6 +14,7 @@ hostname= cbxcx.weinian.com.cn
 const $ = new Env(`臭宝`);
 const cookie = $.getdata("CookieBM") || ($.isNode() && process.env['CookieBM']) || ''; // 哔哩哔哩漫画Cookie
 const barkKey = $.isNode() && process.env['BM_BARK_KEY'] || ''; // bark key
+$.msg($.name, ``, $request);
 if (typeof $request !== 'undefined') {
     GetCookie(cookie)
   } else if (!cookie) {
