@@ -33,6 +33,8 @@ if (typeof $request !== 'undefined') {
       body: "platform=ios"
     };
     $.post(resquester, async function (error, response, data) {
+        const req = JSON.stringify($request);
+        $.msgBody = req;
       if (error && !data) {
         $.msgBody = `请求失败!\n${error}`;
       } else if (data.includes(`"code":0`)) {
