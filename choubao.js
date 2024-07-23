@@ -42,10 +42,10 @@ if (typeof $request !== 'undefined') {
     };
     //同意协议
     $.post(resquester1, async function (error, response, data) {
-      $.log('返回的error',JSON.stringify(error));
-      $.log('返回的response',JSON.stringify(response));
-      $.log('返回的data',JSON.stringify(data));
-      if (data) {
+      $.log('返回的error1',JSON.stringify(error));
+      $.log('返回的response1',JSON.stringify(response));
+      $.log('返回的data1',JSON.stringify(data));
+      if (data != '' && data !=null) {
         $.log('拼接data',"Bearer"+data);
         $.setdata("Bearer"+data, `CookieBM`);
       }else{
@@ -60,9 +60,9 @@ if (typeof $request !== 'undefined') {
     })
     //签到
     $.post(resquester2, async function (error, response, data) {
-      $.log('返回的error',JSON.stringify(error));
-      $.log('返回的response',JSON.stringify(response));
-      $.log('返回的data',JSON.stringify(data));
+      $.log('返回的error2',JSON.stringify(error));
+      $.log('返回的response2',JSON.stringify(response));
+      $.log('返回的data2',JSON.stringify(data));
       if (error && !data) {
         $.msgBody = `请求失败!\n${error}`;
       } else {
