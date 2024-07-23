@@ -59,7 +59,6 @@ if (typeof $request !== 'undefined') {
           } else {
             $.msgBody = `${data.msg}`
           }
-          $.msg($.name, ``, $.msgBody);
           $.done();
         })
       }else{
