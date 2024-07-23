@@ -28,7 +28,6 @@ const cookie = $.getdata("CookieBM") || ($.isNode() && process.env['CookieBM']) 
 const barkKey = $.isNode() && process.env['BM_BARK_KEY'] || ''; // bark key
 $request = `{"path":"/wnuser/v1/memberUser/getMemberUser","method":"POST","headers":{"Accept-Encoding":"gzip,compress,br,deflate","Connection":"keep-alive","Content-Type":"application/json","Referer":"https://servicewechat.com/wx2206cca563f6f937/87/page-frame.html","Host":"cbxcx.weinian.com.cn","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_4_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.50(0x18003232) NetType/4G Language/zh_CN","Authorization":"BearereyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjE3MTc1OTYsInVzZXJfbmFtZSI6Im9mc0tCNUJlSTJ3bGkzNmlibWdWUHBUQ3J5UGMiLCJhdXRob3JpdGllcyI6WyJXblByaW5jaXBhbDpleUppWVhOcFkxVnpaWElpT25zaWRYTmxja2xrSWpvek5UTTFNVFEzTENKMWMyVnlRMjlrWlNJNklrMVZNakF5TkRBM01qSXdNREF5TmpJaUxDSjFjMlZ5VG1GdFpTSTZJbTltYzB0Q05VSmxTVEozYkdrek5tbGliV2RXVUhCVVEzSjVVR01pTENKdWFXTnJUbUZ0WlNJNkl1aUhyZVd1blVRNU1FTXdSVFl4SWl3aWJXOWlhV3hsSWpvaU1UYzJNREl4TXpjeU1ETWlMQ0p6WlhOemFXOXVTMlY1SWpwdWRXeHNMQ0p5YjJ4bFRHbHpkQ0k2Ym5Wc2JDd2laR1YyYVdObElqcHVkV3hzTENKcGMxQmpJanBtWVd4elpTd2lhWE5CWjNKbFpTSTZabUZzYzJVc0ltMXZZbWxzWlV4dloyOW1abE4wWVhSMWN5STZkSEoxWlgxOSJdLCJqdGkiOiJjNGI5N2I4MS0yNjdkLTQzODAtYTM3My04ZDZhNjU1ZWNhN2MiLCJjbGllbnRfaWQiOiJ3bi1jbG91ZCIsInNjb3BlIjpbIm9wZW5pZCJdfQ.BFginLj4_SJnQvg-rkDtUdLJvC-bWWJcuUhbgCRyxKUtmpuJZduNAhDLKG_HGGBBdEPEPRReViCTRVb5hrF6Sxe8GfTL-41HWGvyuZe82xbdmcUw-0IYoLECZSj7d_Qj4a7yDpMj3Oe8uyw_nOqfKADHIlJpatwrhbditnUW6Hpw30l2XWdL9BnxLWcKux2Tl7TUG9Z-8vwEhf5j4-dBwFvc8yt-zwBQ591CkvblB2UKYY90t2YbCoWu_9Rw3iYuatjuLldk3cvaWnoTDKzSei7z_cV752Z9LoH3CC9OsrMew0rr4Sgo_9gg9BCOJNe_twxEZyeKC0Pw9ZTAUsaq-A","Content-Length":"0"},"sessionIndex":629,"scheme":"https","url":"https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/getMemberUser"}`
 if (typeof $request !== 'undefined') {
-    $.log($.name, `获得的ck：`, cookie);
     GetCookie(cookie)
   } else if (!cookie) {
     $.msg($.name, ``, `签到Cookie失效/未获取 ⚠️`);
@@ -38,7 +37,15 @@ if (typeof $request !== 'undefined') {
   }
   
   function checkin() {
-    const resquester = {
+    const resquester1 = {
+      url: 'https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/agreeOn',
+      headers: {
+        Authorization: cookie,
+        "User-Agent": "comic-universal/1552 CFNetwork/1406.0.4 Darwin/22.4.0 os/ios model/iPhone 12 mobi_app/iphone_comic build/1552 osVer/16.4 network/2 channel/AppStore"
+      },
+      body: "platform=ios"
+    };
+    const resquester2 = {
       url: 'https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/daySign',
       headers: {
         Authorization: cookie,
@@ -46,18 +53,33 @@ if (typeof $request !== 'undefined') {
       },
       body: "platform=ios"
     };
-    $.post(resquester, async function (error, response, data) {
+    //同意协议
+    $.post(resquester1, async function (error, response, data) {
+      $.log('返回的error1',error);
+      $.log('返回的response1',response);
+      $.log('返回的data1',data);
+      if (data) {
+        $.log('拼接data',"Bearer"+data);
+        $.setdata("Bearer"+data, `CookieBM`);
+      }else{
+        $.msgBody = error;
+      }
+      
+      if (barkKey) {
+        await BarkNotify($, barkKey, $.name, $.msgBody);
+      }
+      $.msg($.name, ``, $.msgBody);
+      $.done();
+    })
+    //签到
+    $.post(resquester2, async function (error, response, data) {
+      $.log('返回的error2',error);
+      $.log('返回的response2',response);
+      $.log('返回的data2',data);
       if (error && !data) {
         $.msgBody = `请求失败!\n${error}`;
-      } else if (data.includes(`"code":0`)) {
-        $.msgBody = "签到成功！🎉";
-      } else if (data.includes(`"code":1`)) {
-        $.msgBody = "签到失败，今日已签过 ⚠️";
-      } else if (data.includes(`"invalid_argument"`)) {
-        $.msgBody = "签到失败，Cookie失效（已清除） ⚠️";
-        $.setdata("", "CookieBM");
       } else {
-        $.msgBody = `签到失败 ‼️\n${data}`;
+        $.msgBody = data.msg;
       }
       if (barkKey) {
         await BarkNotify($, barkKey, $.name, $.msgBody);
@@ -68,13 +90,13 @@ if (typeof $request !== 'undefined') {
   }
   
   function GetCookie(oldCookie) {
-    const req = JSON.parse($request);
+    const req = JSON.parse(JSON.stringify($request));
     $.log('返回的json',req);
     const authorization = req.headers.Authorization
     $.log('获得的认证authorization：',authorization);
     const setCookie = $.setdata(authorization, `CookieBM`);
     if (oldCookie) {
-        $.log($.name, `更新Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
+        $.msg($.name, `更新Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
     } else {
         $.msg($.name, ``, `获取Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
     }
