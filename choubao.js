@@ -14,6 +14,7 @@ hostname= cbxcx.weinian.com.cn
 const $ = new Env(`臭宝`);
 const cookie = $.getdata("CookieBM") || ($.isNode() && process.env['CookieBM']) || ''; // 哔哩哔哩漫画Cookie
 const barkKey = $.isNode() && process.env['BM_BARK_KEY'] || ''; // bark key
+const cookies = ""
 if (typeof $request !== 'undefined') {
     GetCookie(cookie)
   } else if (!cookie) {
@@ -42,14 +43,29 @@ if (typeof $request !== 'undefined') {
     };
     //同意协议
     $.post(resquester1, async function (error, response, data) {
-      $.log('返回的error1',JSON.stringify(error));
-      $.log('返回的response1',JSON.stringify(response));
       $.log('返回的data1',JSON.stringify(data));
-      if (data != '' && data !=null) {
-        $.log('拼接data',"Bearer"+data);
-        $.setdata("Bearer"+data, `CookieBM`);
+      data = JSON.parse(JSON.stringify(data))
+      if (data != "" && data !=null) {
+        cookies = "Bearer" + data
+        $.log('拼接data',cookies);
+        $.setdata(cookies, `CookieBM`);
+        //签到
+        $.post(resquester2, async function (error, response, data) {
+          $.log('返回的data2',JSON.stringify(data));
+          data = JSON.parse(JSON.stringify(data))
+          if (error && !data) {
+            $.msgBody = `请求失败!\n${error}`;
+          } else {
+            $.msgBody = `${data.msg}`
+          }
+          if (barkKey) {
+            await BarkNotify($, barkKey, $.name, $.msgBody);
+          }
+          $.msg($.name, ``, $.msgBody);
+          $.done();
+        })
       }else{
-        $.msgBody = error;
+        $.msgBody = `${error}`;
       }
       
       if (barkKey) {
@@ -58,22 +74,7 @@ if (typeof $request !== 'undefined') {
       $.msg($.name, ``, $.msgBody);
       $.done();
     })
-    //签到
-    $.post(resquester2, async function (error, response, data) {
-      $.log('返回的error2',JSON.stringify(error));
-      $.log('返回的response2',JSON.stringify(response));
-      $.log('返回的data2',JSON.stringify(data));
-      if (error && !data) {
-        $.msgBody = `请求失败!\n${error}`;
-      } else {
-        $.msgBody = data.msg;
-      }
-      if (barkKey) {
-        await BarkNotify($, barkKey, $.name, $.msgBody);
-      }
-      $.msg($.name, ``, $.msgBody);
-      $.done();
-    })
+    
   }
   
   function GetCookie(oldCookie) {
