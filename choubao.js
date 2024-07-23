@@ -14,9 +14,9 @@ hostname= cbxcx.weinian.com.cn
 const $ = new Env(`臭宝`);
 const cookie = $.getdata("CookieBM") || ($.isNode() && process.env['CookieBM']) || ''; // 哔哩哔哩漫画Cookie
 const barkKey = $.isNode() && process.env['BM_BARK_KEY'] || ''; // bark key
-$.msg($.name, `请求日志：`, $request);
+$.log(`请求日志：`, JSON.stringify($request));
 if (typeof $request !== 'undefined') {
-    $.msg($.name, `获得的ck：`, cookie);
+    $.log($.name, `获得的ck：`, cookie);
     GetCookie(cookie)
   } else if (!cookie) {
     $.msg($.name, ``, `签到Cookie失效/未获取 ⚠️`);
@@ -35,8 +35,6 @@ if (typeof $request !== 'undefined') {
       body: "platform=ios"
     };
     $.post(resquester, async function (error, response, data) {
-        const req = JSON.stringify($request);
-        $.log($.name, `你好log :  ${req}`);
       if (error && !data) {
         $.msgBody = `请求失败!\n${error}`;
       } else if (data.includes(`"code":0`)) {
@@ -59,9 +57,9 @@ if (typeof $request !== 'undefined') {
   
   function GetCookie(oldCookie) {
     const req = JSON.stringify($request);
-    $.msg($.name, '返回的json',req);
+    $.log('返回的json',req);
     const authorization = req.Authorization
-    $.msg($.name, '获得的认证authorization：',req);
+    $.log('获得的认证authorization：',authorization);
     const setCookie = $.setdata(authorization, `CookieBM`);
     if (oldCookie) {
         $.log($.name, `更新Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
