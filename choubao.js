@@ -47,7 +47,7 @@ if (typeof $request !== 'undefined') {
       result = JSON.parse(JSON.stringify(data))
 
       if (result.data != "" && result.data !=null) {
-        cookies = "Bearer" + data
+        cookies = `Bearer${result.data}`
         $.log('拼接data',cookies);
         $.setdata(cookies, `CookieBM`);
         //签到
@@ -58,9 +58,6 @@ if (typeof $request !== 'undefined') {
             $.msgBody = `请求失败!\n${error}`;
           } else {
             $.msgBody = `${data.msg}`
-          }
-          if (barkKey) {
-            await BarkNotify($, barkKey, $.name, $.msgBody);
           }
           $.msg($.name, ``, $.msgBody);
           $.done();
