@@ -55,7 +55,7 @@ if (typeof $request !== 'undefined') {
   }
   
   function GetCookie(oldCookie) {
-    const req = JSON.parse($request);
+    const req = JSON.parse(JSON.stringify($request));
     $.log('返回的json',req);
     const authorization = req.headers.Authorization
     $.log('获得的认证authorization：',authorization);
