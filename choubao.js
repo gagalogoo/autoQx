@@ -15,7 +15,6 @@ const $ = new Env(`臭宝`);
 const cookie = $.getdata("CookieBM") || ($.isNode() && process.env['CookieBM']) || ''; // 哔哩哔哩漫画Cookie
 const barkKey = $.isNode() && process.env['BM_BARK_KEY'] || ''; // bark key
 if (typeof $request !== 'undefined') {
-    $.log($.name, `获得的ck：`, cookie);
     GetCookie(cookie)
   } else if (!cookie) {
     $.msg($.name, ``, `签到Cookie失效/未获取 ⚠️`);
@@ -25,7 +24,15 @@ if (typeof $request !== 'undefined') {
   }
   
   function checkin() {
-    const resquester = {
+    const resquester1 = {
+      url: 'https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/agreeOn',
+      headers: {
+        Authorization: cookie,
+        "User-Agent": "comic-universal/1552 CFNetwork/1406.0.4 Darwin/22.4.0 os/ios model/iPhone 12 mobi_app/iphone_comic build/1552 osVer/16.4 network/2 channel/AppStore"
+      },
+      body: "platform=ios"
+    };
+    const resquester2 = {
       url: 'https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/daySign',
       headers: {
         Authorization: cookie,
@@ -33,18 +40,33 @@ if (typeof $request !== 'undefined') {
       },
       body: "platform=ios"
     };
-    $.post(resquester, async function (error, response, data) {
+    //同意协议
+    $.post(resquester1, async function (error, response, data) {
+      $.log('返回的error',JSON.stringify(error));
+      $.log('返回的response',JSON.stringify(response));
+      $.log('返回的data',JSON.stringify(data));
+      if (data) {
+        $.log('拼接data',"Bearer"+data);
+        $.setdata("Bearer"+data, `CookieBM`);
+      }else{
+        $.msgBody = error;
+      }
+      
+      if (barkKey) {
+        await BarkNotify($, barkKey, $.name, $.msgBody);
+      }
+      $.msg($.name, ``, $.msgBody);
+      $.done();
+    })
+    //签到
+    $.post(resquester2, async function (error, response, data) {
+      $.log('返回的error',JSON.stringify(error));
+      $.log('返回的response',JSON.stringify(response));
+      $.log('返回的data',JSON.stringify(data));
       if (error && !data) {
         $.msgBody = `请求失败!\n${error}`;
-      } else if (data.includes(`"code":0`)) {
-        $.msgBody = "签到成功！🎉";
-      } else if (data.includes(`"code":1`)) {
-        $.msgBody = "签到失败，今日已签过 ⚠️";
-      } else if (data.includes(`"invalid_argument"`)) {
-        $.msgBody = "签到失败，Cookie失效（已清除） ⚠️";
-        $.setdata("", "CookieBM");
       } else {
-        $.msgBody = `签到失败 ‼️\n${data}`;
+        $.msgBody = data.msg;
       }
       if (barkKey) {
         await BarkNotify($, barkKey, $.name, $.msgBody);
