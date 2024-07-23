@@ -14,8 +14,9 @@ hostname= cbxcx.weinian.com.cn
 const $ = new Env(`臭宝`);
 const cookie = $.getdata("CookieBM") || ($.isNode() && process.env['CookieBM']) || ''; // 哔哩哔哩漫画Cookie
 const barkKey = $.isNode() && process.env['BM_BARK_KEY'] || ''; // bark key
-$.msg($.name, ``, $request);
+$.msg($.name, `请求日志：`, $request);
 if (typeof $request !== 'undefined') {
+    $.msg($.name, `获得的ck：`, cookie);
     GetCookie(cookie)
   } else if (!cookie) {
     $.msg($.name, ``, `签到Cookie失效/未获取 ⚠️`);
@@ -58,9 +59,10 @@ if (typeof $request !== 'undefined') {
   
   function GetCookie(oldCookie) {
     const req = JSON.stringify($request);
-    $.log($.name, req);
-    const cookieValue = req.split(/(Authorization=.+?;)/)[1];
-    const setCookie = $.setdata(cookieValue, `CookieBM`);
+    $.msg($.name, '返回的json',req);
+    const authorization = req.Authorization
+    $.msg($.name, '获得的认证authorization：',req);
+    const setCookie = $.setdata(authorization, `CookieBM`);
     if (oldCookie) {
         $.log($.name, `更新Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
     } else {
