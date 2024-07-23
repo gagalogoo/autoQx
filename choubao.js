@@ -61,7 +61,7 @@ if (typeof $request !== 'undefined') {
     $.log('获得的认证authorization：',authorization);
     const setCookie = $.setdata(authorization, `CookieBM`);
     if (oldCookie) {
-        $.log($.name, `更新Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
+        $.msg($.name, `更新Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
     } else {
         $.msg($.name, ``, `获取Cookie${setCookie ? `成功 🎉` : `失败 ⚠️`}`);
     }
