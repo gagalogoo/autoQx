@@ -36,7 +36,7 @@ if (typeof $request !== 'undefined') {
     const resquester2 = {
       url: 'https://cbxcx.weinian.com.cn/wnuser/v1/memberUser/daySign',
       headers: {
-        Authorization: cookie,
+        Authorization: cookies,
         "User-Agent": "comic-universal/1552 CFNetwork/1406.0.4 Darwin/22.4.0 os/ios model/iPhone 12 mobi_app/iphone_comic build/1552 osVer/16.4 network/2 channel/AppStore"
       },
       body: "platform=ios"
@@ -44,8 +44,9 @@ if (typeof $request !== 'undefined') {
     //同意协议
     $.post(resquester1, async function (error, response, data) {
       $.log('返回的data1',JSON.stringify(data));
-      data = JSON.parse(JSON.stringify(data))
-      if (data != "" && data !=null) {
+      result = JSON.parse(JSON.stringify(data))
+
+      if (result.data != "" && result.data !=null) {
         cookies = "Bearer" + data
         $.log('拼接data',cookies);
         $.setdata(cookies, `CookieBM`);
